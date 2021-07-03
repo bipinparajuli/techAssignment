@@ -10,7 +10,7 @@ router.post("/signup",
 ],
 signup)
 
-router.get("/signin",
+router.post("/signin",
 [
    
     check("email", "email is required").isEmail(),

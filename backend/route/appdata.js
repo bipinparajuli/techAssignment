@@ -1,4 +1,3 @@
-// const router = require("./auth");
 
 const router = require("express").Router();
 
@@ -10,7 +9,7 @@ const {isSignedIn,isAuthenticated} = require("../controller/auth")
 router.param("appId",getAppById);
 router.param("userId",getUserById);
 
-router.post("/createapp",isSignedIn,isAuthenticated,createApp);
+router.post("/createapp",createApp);
 
 router.get("/getapp",isSignedIn,getApp);
 

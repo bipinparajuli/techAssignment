@@ -33,9 +33,10 @@ const app = new mongoose.Schema({
         type:String,
         default:1.0
     },
-    // appfile:{
-    //     type:File
-    // }
+    apkpath:{
+        type:String,
+        required:true
+    }
 })
 
 module.exports=mongoose.model("Appdata",app);

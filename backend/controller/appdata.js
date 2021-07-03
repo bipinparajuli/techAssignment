@@ -1,14 +1,10 @@
 const Appdata = require("../model/appdata");
 const formidable = require("formidable");
 const fs = require("fs");
-const mongoose = require("mongoose");
-const Grid = require("gridfs-stream");
 const appdata = require("../model/appdata");
-const con = mongoose.Connection;
+const crypto = require("crypto")
 
 
-//CONNECTING MONGOOSE AND GRIDFS
-Grid.mongo = mongoose.mongo
 
 exports.getAppById = (req,res,id,next)=>{
   Appdata.findById(id).then((app)=>{
@@ -22,15 +18,7 @@ exports.getAppById = (req,res,id,next)=>{
 }
 
 
-exports.createApp = (req,res) => {
-
-    con.once("open",()=>{
-        console.log("Connection Open");
-
-        let gfs = Grid(con.db);
-
-        
-    })
+exports.createApp = async (req,res) => {
 
     let form = new formidable.IncomingForm();
     form.keepExtensions = true;
@@ -50,23 +38,45 @@ exports.createApp = (req,res) => {
         });
       }
   
-      let product = new Appdata(fields);
-  
+      let product={};
+
+      let filepath;
+
+      if(file.apkpath.type == "application/vnd.android.package-archive")
+      {
+        
+             filepath =`./uploads/${file.apkpath.name}`;
+            
+
+             let path = fs.readFileSync(file.apkpath.path);
+      
+       
+               fs.writeFile(filepath,path,(data)=>{
+                   console.log("filewritten success");
+               })
+        
+      }
+
+
+      
+
+      product= new Appdata({fields,apkpath:filepath});
       //handle file here
       if (file.screenshots) {
-        // if (file.screenshots.size > 3000000 || file.icons.size > 3000000) {
-        //   return res.status(400).json({
-        //     error: "File size too big!"
-        //   });
-        // }
+        if (file.screenshots.size > 3000000 || file.icons.size > 3000000) {
+          return res.status(400).json({
+            error: "File size too big!"
+          });
+        }
 
 
         product.screenshots.data = fs.readFileSync(file.screenshots.path);
         product.screenshots.contentType = file.screenshots.type;
+
         product.icons.data = fs.readFileSync(file.icons.path);
         product.icons.contentType = file.icons.type;
       }
-      // console.log(product);
+      console.log(product.apkpath);
   
       //save to the DB
       product.save((err, product) => {
