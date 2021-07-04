@@ -1,23 +1,23 @@
 const Appdata = require("../model/appdata");
 const formidable = require("formidable");
 const fs = require("fs");
-const appdata = require("../model/appdata");
-const crypto = require("crypto")
 
 
-
-exports.getAppById = (req,res,id,next)=>{
+//Setting App according to ID
+exports.getAppById = (req,res,next,id)=>{
+  console.log(id);
   Appdata.findById(id).then((app)=>{
     req.app = app
     next();
   }).catch(e=>{
+    console.log(e);
     return res.status(400).json({
       error: "App data not found"
     });
   })
 }
 
-
+//saving app to database
 exports.createApp = async (req,res) => {
 
     let form = new formidable.IncomingForm();
@@ -94,7 +94,8 @@ exports.createApp = async (req,res) => {
 
 }
 
-exports.updateApp = (req,res) => {
+//updating app
+exports.updateApp = async (req,res) => {
   let form = new formidable.IncomingForm();
   form.keepExtensions = true;
 
@@ -111,15 +112,36 @@ exports.updateApp = (req,res) => {
 
     //handle file here
     if (file.photo) {
-      if (file.photo.size > 3000000) {
+      if (file.screenshots.size > 3000000 || file.icons.size > 3000000) {
         return res.status(400).json({
           error: "File size too big!"
         });
       }
-      product.photo.data = fs.readFileSync(file.photo.path);
-      product.photo.contentType = file.photo.type;
+      product.screenshots.data = fs.readFileSync(file.screenshots.path);
+      product.screenshots.contentType = file.screenshots.type;
+
+      product.icons.data = fs.readFileSync(file.icons.path);
+      product.icons.contentType = file.icons.type;
     }
-    // console.log(product);
+    // update apk here;
+
+    if(file.apkpath.type == "application/vnd.android.package-archive")
+      {
+        
+             filepath =`./uploads/${file.apkpath.name}`;
+            
+
+             let path = fs.readFileSync(file.apkpath.path);
+      
+       
+               fs.writeFile(filepath,path,(data)=>{
+                   console.log("updatedsuccess success");
+               })
+        
+      }
+
+    let  product= new Appdata({fields,apkpath:filepath});
+
 
     //save to the DB
     product.save((err, product) => {
@@ -133,16 +155,18 @@ exports.updateApp = (req,res) => {
   });
 }
 
-exports.getApp = (req,res) => {
-  let limit = req.query.limit ? parseInt(req.query.limit) : 8;
+//get all app
+exports.getApp = async (req,res) => {
+  let limit = req.query.limit ? parseInt(req.query.limit) : 5;
   let sortBy = req.query.sortBy ? req.query.sortBy : "_id";
 
   appdata.find()
-    .select("-photo")
-    .populate("category")
+    // .select("-photo")
+    // .populate("category")
     .sort([[sortBy, "asc"]])
     .limit(limit)
     .exec((err, products) => {
+      console.log(products.length);
       if (err) {
         return res.status(400).json({
           error: "NO product FOUND"
@@ -153,10 +177,16 @@ exports.getApp = (req,res) => {
 
 }
 
-
-
-exports.deleteApp = (req,res) => {
+//deleting app
+exports.deleteApp = async (req,res) => {
   let app = req.app;
+  
+  //Deleting APK
+  fs.unlink(req.app.apkpath, function (err) {
+    if (err) throw err;
+    console.log('File deleted!');
+  });
+
   app.remove((err, deletedProduct) => {
     if (err) {
       return res.status(400).json({

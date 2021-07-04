@@ -27,15 +27,25 @@ const app = new mongoose.Schema({
         type:String
     },
     email:{
-        type:String
+        type:String,
+        required:true
+    },
+    website:{
+        type:String,
     },
     releasename:{
         type:String,
         default:1.0
     },
+    newfeature:{
+        type:String
+    },
     apkpath:{
         type:String,
         required:true
+    },
+    privacy:{
+        type:String
     }
 })
 
