@@ -3,11 +3,11 @@ const mongoose = require("mongoose");
 const app = new mongoose.Schema({
     title:{
         type:String,
-        require:true
+        required:true
     },
     description:{
         type:String,
-        require:true
+        required:true
         
     },
     screenshots:{
@@ -19,11 +19,9 @@ const app = new mongoose.Schema({
         contentType:String
     },
     apptype:{
-        enum:['Application','Game'],
         type:String
     },
     category:{
-        enum:['Health','Education','Entertainment'],
         type:String
     },
     email:{
@@ -37,7 +35,7 @@ const app = new mongoose.Schema({
         type:String,
         default:1.0
     },
-    newfeature:{
+    whatisnew:{
         type:String
     },
     apkpath:{

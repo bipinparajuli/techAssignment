@@ -9,13 +9,13 @@ const {isSignedIn,isAuthenticated} = require("../controller/auth")
 router.param("appId",getAppById);
 router.param("userId",getUserById);
 
-router.post("/createapp",isSignedIn,createApp);
+router.post("/createapp",createApp);
 
-router.get("/getapp",isSignedIn,getApp);
+router.get("/getapp",getApp);
 
 router.put("/updateapp/:appId/:userId",isSignedIn,isAuthenticated,updateApp);
 
-router.delete("/deleteapp/:appId/:userId",isSignedIn,isAuthenticated,deleteApp);
+router.delete("/deleteapp/:appId",deleteApp);
 
 // 60e0a3a27935073c64367779
 

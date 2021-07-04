@@ -5,9 +5,9 @@ const fs = require("fs");
 
 //Setting App according to ID
 exports.getAppById = (req,res,next,id)=>{
-  console.log(id);
   Appdata.findById(id).then((app)=>{
     req.app = app
+
     next();
   }).catch(e=>{
     console.log(e);
@@ -41,8 +41,9 @@ exports.createApp = async (req,res) => {
       let product={};
 
       let filepath;
-
-      if(file.apkpath.type == "application/vnd.android.package-archive")
+console.log(file.apkpath);
+      
+if(file.apkpath.type == "application/vnd.android.package-archive")
       {
         
              filepath =`./uploads/${file.apkpath.name}`;
@@ -60,7 +61,7 @@ exports.createApp = async (req,res) => {
 
       
 
-      product= new Appdata({fields,apkpath:filepath});
+      product= new Appdata({...fields,apkpath:filepath});
       //handle file here
       if (file.screenshots) {
         if (file.screenshots.size > 3000000 || file.icons.size > 3000000) {
@@ -76,11 +77,10 @@ exports.createApp = async (req,res) => {
         product.icons.data = fs.readFileSync(file.icons.path);
         product.icons.contentType = file.icons.type;
       }
-      console.log(product.apkpath);
   
       //save to the DB
       product.save((err, product) => {
-      console.log("SAVING");
+      console.log(product,"SAVING");
        
         if (err) {
        console.log(err);
@@ -160,7 +160,7 @@ exports.getApp = async (req,res) => {
   let limit = req.query.limit ? parseInt(req.query.limit) : 5;
   let sortBy = req.query.sortBy ? req.query.sortBy : "_id";
 
-  appdata.find()
+  Appdata.find()
     // .select("-photo")
     // .populate("category")
     .sort([[sortBy, "asc"]])
@@ -183,7 +183,10 @@ exports.deleteApp = async (req,res) => {
   
   //Deleting APK
   fs.unlink(req.app.apkpath, function (err) {
-    if (err) throw err;
+    // if (err) throw err;
+
+    console.log(err);
+
     console.log('File deleted!');
   });
 
