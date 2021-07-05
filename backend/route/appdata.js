@@ -1,21 +1,31 @@
 
 const router = require("express").Router();
 
-const {createApp,updateApp,getAppById,deleteApp,getApp} =  require("../controller/appdata");
+const {createApp,updateApp,getAppById,deleteApp,getApp,photo,getAllApp,searchApp,getAppByTitle} =  require("../controller/appdata");
 const {getUserById} = require("../controller/user")
 const {isSignedIn,isAuthenticated} = require("../controller/auth")
 
 
 router.param("appId",getAppById);
 router.param("userId",getUserById);
+router.param("appName",getAppByTitle);
 
 router.post("/createapp",createApp);
 
-router.get("/getapp",getApp);
+router.get("/getallapp",getAllApp);
 
-router.put("/updateapp/:appId/:userId",isSignedIn,isAuthenticated,updateApp);
+router.get("/getapp/:appId",getApp);
+
+router.get("/photo/:appId",photo);
+
+router.get("/search/:appName",searchApp);
+
+
+
+router.put("/updateapp/:appId",updateApp);
 
 router.delete("/deleteapp/:appId",deleteApp);
+
 
 // 60e0a3a27935073c64367779
 

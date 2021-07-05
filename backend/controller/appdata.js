@@ -1,13 +1,13 @@
 const Appdata = require("../model/appdata");
 const formidable = require("formidable");
 const fs = require("fs");
+let _ = require("lodash");
 
 
 //Setting App according to ID
 exports.getAppById = (req,res,next,id)=>{
   Appdata.findById(id).then((app)=>{
     req.app = app
-
     next();
   }).catch(e=>{
     console.log(e);
@@ -17,6 +17,55 @@ exports.getAppById = (req,res,next,id)=>{
   })
 }
 
+//Setting App according to title
+
+exports.getAppByTitle = (req,res,next,title) => {
+const regx = new RegExp(title,'i')
+
+    Appdata.find({title:regx},(err,app)=> {
+if(err)
+{
+    res.status(403).json({error:"Could not find App by title"})
+}
+req.apptitle = app
+next();
+})
+}
+
+
+//get single App
+
+exports.getApp = (req,res) => {
+  req.app.icons = undefined;
+  req.app.screenshots = undefined;
+
+  return res.json(req.app);
+}
+
+
+//middleware
+exports.photo = (req, res, next) => {
+  // console.log(req.app.icons);
+  // if (req.app.screenshots.data) {
+  //   res.set("Content-Type", req.app.screenshots.contentType);
+  //   return res.send(req.app.screenshots.data);
+  // }
+   if (req.app.icons.data) {
+    res.set("Content-Type", req.app.icons.contentType);
+    return res.send(req.app.icons.data);
+  }
+
+  next();
+};
+
+//search
+
+exports.searchApp =(req,res) => {
+
+    res.json(req.apptitle)
+    
+}
+
 //saving app to database
 exports.createApp = async (req,res) => {
 
@@ -24,11 +73,13 @@ exports.createApp = async (req,res) => {
     form.keepExtensions = true;
     
     form.parse(req, (err, fields, file) => {
+      
       if (err) {
         return res.status(400).json({
           error: "problem with image"
         });
       }
+      
       //destructure the fields
       const { title, description, apptype, releasename, email,category } = fields;
   
@@ -37,13 +88,13 @@ exports.createApp = async (req,res) => {
           error: "Please include all fields"
         });
       }
+      console.log(fileds);
   
-      let product={};
+    
 
       let filepath;
-console.log(file.apkpath);
       
-if(file.apkpath.type == "application/vnd.android.package-archive")
+    if(file.apkpath.type == "application/vnd.android.package-archive")
       {
         
              filepath =`./uploads/${file.apkpath.name}`;
@@ -61,18 +112,15 @@ if(file.apkpath.type == "application/vnd.android.package-archive")
 
       
 
-      product= new Appdata({...fields,apkpath:filepath});
+    let product= new Appdata({...fields,apkpath:filepath});
       //handle file here
-      if (file.screenshots) {
-        if (file.screenshots.size > 3000000 || file.icons.size > 3000000) {
+      if (file.icons) {
+        if (file.icons.size > 3000000) {
           return res.status(400).json({
             error: "File size too big!"
           });
         }
 
-
-        product.screenshots.data = fs.readFileSync(file.screenshots.path);
-        product.screenshots.contentType = file.screenshots.type;
 
         product.icons.data = fs.readFileSync(file.icons.path);
         product.icons.contentType = file.icons.type;
@@ -96,10 +144,12 @@ if(file.apkpath.type == "application/vnd.android.package-archive")
 
 //updating app
 exports.updateApp = async (req,res) => {
+ 
   let form = new formidable.IncomingForm();
   form.keepExtensions = true;
 
   form.parse(req, (err, fields, file) => {
+    console.log(file);
     if (err) {
       return res.status(400).json({
         error: "problem with image"
@@ -108,22 +158,25 @@ exports.updateApp = async (req,res) => {
 
     //updation code
     let app = req.app;
-    app = _.extend(app, fields);
+
 
     //handle file here
-    if (file.photo) {
-      if (file.screenshots.size > 3000000 || file.icons.size > 3000000) {
+    if (file.icons) {
+
+      if (file.icons.size > 3000000) {
         return res.status(400).json({
           error: "File size too big!"
         });
       }
-      product.screenshots.data = fs.readFileSync(file.screenshots.path);
-      product.screenshots.contentType = file.screenshots.type;
+      
+      app.icons.data = fs.readFileSync(file.icons.path);
+      app.icons.contentType = file.icons.type;
 
-      product.icons.data = fs.readFileSync(file.icons.path);
-      product.icons.contentType = file.icons.type;
+      console.log("Updated");
     }
     // update apk here;
+    let filepath;
+if(file.apkpath){
 
     if(file.apkpath.type == "application/vnd.android.package-archive")
       {
@@ -135,17 +188,26 @@ exports.updateApp = async (req,res) => {
       
        
                fs.writeFile(filepath,path,(data)=>{
-                   console.log("updatedsuccess success");
+                   console.log("updated success");
                })
         
       }
+    app = _.extend(app, fields,{apkpath:filepath});
 
-    let  product= new Appdata({fields,apkpath:filepath});
+    }
+    else{
+    app = _.extend(app, fields);
 
+    }
+
+    // let  product= new Appdata(app);
+
+console.log(app);
 
     //save to the DB
-    product.save((err, product) => {
+    app.save((err, product) => {
       if (err) {
+        console.log(err);
         res.status(400).json({
           error: "Updation of product failed"
         });
@@ -156,7 +218,7 @@ exports.updateApp = async (req,res) => {
 }
 
 //get all app
-exports.getApp = async (req,res) => {
+exports.getAllApp = async (req,res) => {
   let limit = req.query.limit ? parseInt(req.query.limit) : 5;
   let sortBy = req.query.sortBy ? req.query.sortBy : "_id";
 
