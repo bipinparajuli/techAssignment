@@ -1,0 +1,21 @@
+.home{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+a{
+  /* color: #fff; */
+  text-decoration: none;
+}
+
+.registration-form{
+  padding: 5%;
+box-shadow: 1px 1px 5px 2px #ccc;
+border-radius: 10px;
+}
+
+h1{
+  margin-bottom: 15px;
+}

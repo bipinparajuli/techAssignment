@@ -1,0 +1,20 @@
+.create-app{
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    margin-bottom: 5%;
+}
+
+.app{
+    background-color: #fff;
+    box-shadow: 1px 0px 1px 1px blueviolet;
+    margin: 2% 0;
+    padding: 5%;
+    border-radius: 10px;
+}
+
+.container{
+    background-color: #ccc;
+    display: flex;
+    justify-content: center;
+}

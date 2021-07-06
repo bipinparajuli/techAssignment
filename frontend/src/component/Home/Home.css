@@ -1,0 +1,26 @@
+*,html{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.home-container{
+background-color: #ddd;
+display: flex;
+flex-direction: column;
+justify-content: space-around;
+align-items: center;
+height: 90vh;
+}
+
+.app_name{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.home-container .MuiPaper-root{
+    display: flex;
+    justify-content: center;
+    width: 90% !important;
+}
