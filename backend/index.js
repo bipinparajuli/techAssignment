@@ -16,7 +16,7 @@ app.use(cors())
 
 
 //DATABASE CONNECTION
-mongoose.connect('mongodb://localhost:27017/myapp',
+mongoose.connect(process.env.DATABASE,
  {useNewUrlParser: true})
 .then(()=>console.log("DB connected"));
 
@@ -27,6 +27,7 @@ app.use("/api",authRoute)
 app.use("/api",appRoute)
 
 app.listen(5000,()=>{
+
 console.log("App is running");
 })
 

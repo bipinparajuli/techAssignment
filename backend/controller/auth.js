@@ -3,6 +3,7 @@ const {validationResult} = require("express-validator");
 const bycrypt = require("bcrypt");
 const jwt = require("jsonwebtoken")
 const expressJwt = require("express-jwt");
+
 exports.signup = async (req,res) => {
 
 
@@ -79,6 +80,7 @@ exports.signin = async (req,res) => {
                 messege:[],
                 data:{
                     email:user.email,
+                    id:user._id,
                     username:user.username,
                     token:token
                 }
@@ -108,15 +110,18 @@ exports.signin = async (req,res) => {
 }
 
 
-exports.isSignedIn = () => {
-    expressJwt({
+exports.isSignedIn = expressJwt({
         secret:process.env.SECRET,
+        algorithms: ['sha1', 'RS256', 'HS256'],
         userProperty:"auth"
     })
-}
+
 
 exports.isAuthenticated = (req,res,next) => {
-    let cheker = req.profile && req.auth && req.profile._id == req.auth._id;
+
+    let cheker = req.profile && req.auth && req.profile._id == req.auth.id;
+
+    // console.log(checker);
 
     if(!cheker)
     {
@@ -127,6 +132,7 @@ exports.isAuthenticated = (req,res,next) => {
         })
 
     }
+
 
     next();
 }

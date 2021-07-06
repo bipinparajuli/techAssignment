@@ -66,7 +66,7 @@ exports.searchApp =(req,res) => {
     
 }
 
-//saving app to database
+//creating app 
 exports.createApp = async (req,res) => {
 
     let form = new formidable.IncomingForm();
@@ -88,7 +88,6 @@ exports.createApp = async (req,res) => {
           error: "Please include all fields"
         });
       }
-      console.log(fileds);
   
     
 
@@ -112,7 +111,7 @@ exports.createApp = async (req,res) => {
 
       
 
-    let product= new Appdata({...fields,apkpath:filepath});
+    let app= new Appdata({...fields,apkpath:filepath});
       //handle file here
       if (file.icons) {
         if (file.icons.size > 3000000) {
@@ -122,13 +121,13 @@ exports.createApp = async (req,res) => {
         }
 
 
-        product.icons.data = fs.readFileSync(file.icons.path);
-        product.icons.contentType = file.icons.type;
+        app.icons.data = fs.readFileSync(file.icons.path);
+        app.icons.contentType = file.icons.type;
       }
   
       //save to the DB
-      product.save((err, product) => {
-      console.log(product,"SAVING");
+      app.save((err, app) => {
+      // console.log(app,"SAVING");
        
         if (err) {
        console.log(err);
@@ -136,7 +135,7 @@ exports.createApp = async (req,res) => {
             error: "Saving tshirt in DB failed"
           });
         }
-        res.json(product);
+        res.json(app);
       });
     });
 
@@ -200,19 +199,18 @@ if(file.apkpath){
 
     }
 
-    // let  product= new Appdata(app);
 
-console.log(app);
+// console.log(app);
 
     //save to the DB
-    app.save((err, product) => {
+    app.save((err, app) => {
       if (err) {
         console.log(err);
         res.status(400).json({
-          error: "Updation of product failed"
+          error: "Updation of app failed"
         });
       }
-      res.json(product);
+      res.json(app);
     });
   });
 }
@@ -227,14 +225,14 @@ exports.getAllApp = async (req,res) => {
     // .populate("category")
     .sort([[sortBy, "asc"]])
     .limit(limit)
-    .exec((err, products) => {
-      console.log(products.length);
+    .exec((err, apps) => {
+      console.log(apps.length);
       if (err) {
         return res.status(400).json({
-          error: "NO product FOUND"
+          error: "NO APP FOUND"
         });
       }
-      res.json(products);
+      res.json(apps);
     });
 
 }
@@ -252,15 +250,15 @@ exports.deleteApp = async (req,res) => {
     console.log('File deleted!');
   });
 
-  app.remove((err, deletedProduct) => {
+  app.remove((err, deletedApp) => {
     if (err) {
       return res.status(400).json({
-        error: "Failed to delete the product"
+        error: "Failed to delete the app"
       });
     }
     res.json({
       message: "Deletion was a success",
-      deletedProduct
+      deletedApp
     });
   });
 }

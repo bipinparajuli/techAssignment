@@ -10,7 +10,7 @@ router.param("appId",getAppById);
 router.param("userId",getUserById);
 router.param("appName",getAppByTitle);
 
-router.post("/createapp",createApp);
+router.post("/createapp/:userId",isSignedIn,isAuthenticated,createApp);
 
 router.get("/getallapp",getAllApp);
 
@@ -22,9 +22,9 @@ router.get("/search/:appName",searchApp);
 
 
 
-router.put("/updateapp/:appId",updateApp);
+router.put("/updateapp/:appId/:userId",isSignedIn,isAuthenticated,updateApp);
 
-router.delete("/deleteapp/:appId",deleteApp);
+router.delete("/deleteapp/:appId/:userId",isSignedIn,isAuthenticated,deleteApp);
 
 
 // 60e0a3a27935073c64367779

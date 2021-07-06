@@ -45,6 +45,6 @@ const app = new mongoose.Schema({
     privacy:{
         type:String
     }
-})
+},{timestamps: true})
 
 module.exports=mongoose.model("Appdata",app);
