@@ -84,51 +84,66 @@ else{
 }
 
     return (
-        <div className="home">
-            <div className="registration-form">
+        <div className="container">
+           
+            <div className="row">
+                <div className="col-1">
+                    <div>
+                        <h1>Welcome to App Store clone</h1>
+                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda accusantium ipsum sapiente quae unde totam corrupti neque amet delectus recusandae?</p>
+                    </div>
+                </div>
 
-            <h1 style={{color:"#383CC1"}}>Sign in here</h1>
+                <div className="col-2">
+                    <div>
+                    <h1>Sign in here</h1>
 
-            {
-                emailFormat? (
+<form action="">
+{
+    emailFormat? (
 
-                <>
-                    <span style={{color:"red"}}>
-                        {emailFormat}
-                    </span>
-                    <br/> <br/> 
-                </>
-                ): ""
-                
-             }
+    <>
+        <span style={{color:"red"}}>
+            {emailFormat}
+        </span>
+        <br/> <br/> 
+    </>
+    ): ""
+    
+ }
 
-                 <TextField label="Email" required variant="outlined" type="email"  onChange={e=>setstate({...state,email:e.target.value})} />
+     <TextField label="Email" required  type="email"  onChange={e=>setstate({...state,email:e.target.value})} />
 
-            <br/>
-            <br/>
+<br/>
+<br/>
 
-            {
-                passwordFormat ? (
-                <>
-                    <span style={{color:"red"}}>
-                        {`${passwordFormat}`}
-                    </span>
-                     <br/> <br/> 
-                </>): ""
-            }
+{
+    passwordFormat ? (
+    <>
+        <span style={{color:"red"}}>
+            {`${passwordFormat}`}
+        </span>
+         <br/> <br/> 
+    </>): ""
+}
 
-             <TextField label="Password" required variant="outlined" type="password" onChange={e=>setstate({...state,password:e.target.value})} />
+ <TextField label="Password" required  type="password" onChange={e=>setstate({...state,password:e.target.value})} />
 
-            <br/>
-            <br/>
+<br/>
+<br/>
 
-            <Button variant="contained" color="primary" onClick={SignIn}>Signin</Button><br /><br />
+<Button variant="contained" color="primary" onClick={SignIn}>Signin</Button><br /><br />
+</form>
 
-            <strong>Don't have <Link to="/">Account ?</Link></strong>
+<strong style={{textAlign:"center"}}>New Account <Link to="/">Account ?</Link></strong>
+                    </div>
+                </div>
+            
             </div>
-
         </div>
     )
 }
 
 export default Signin
+
+

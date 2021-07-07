@@ -1,3 +1,23 @@
+
+h1,h5{
+  margin-bottom: 15px;
+  text-align: center;
+  background-color: #fff;
+}
+
+h3{
+  background-color: #fff;
+  padding: 2% 2%;
+  margin-bottom: 15px !important;
+}
+
+form{
+  display: flex;
+  flex-direction: column;
+}
+
+
+
 .home{
   display: flex;
   flex-direction: column;
@@ -10,12 +30,55 @@ a{
   text-decoration: none;
 }
 
-.registration-form{
-  padding: 5%;
-box-shadow: 1px 1px 5px 2px #ccc;
-border-radius: 10px;
+.container{
+  width: 100%;
+  height: 100vh;
 }
 
-h1{
-  margin-bottom: 15px;
+.row{
+  display: flex;
+  background-color: #fff;
+  margin: 3%;
+  border-radius: 20px;
+  width: inherit;
+}
+.col-1{
+  background-color: #1B98F5;
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  color: #fff;
+}
+
+.col-1 *{
+  width: 420px;
+}
+
+.col-2{
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+form *{
+  /* width: 420px; */
+}
+
+/* CREATE APPLICATION */
+
+.createapplication{
+  width: 100%;
+  height: 90vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.create-form{
+background-color: #fff;
+padding: 5%;
 }
