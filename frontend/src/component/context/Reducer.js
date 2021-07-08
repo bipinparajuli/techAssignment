@@ -1,5 +1,6 @@
 export const initailState={
     search:[],
+    snack:false
     }
     
     
@@ -10,6 +11,10 @@ export const initailState={
         case 'SEARCH':
             //logic for adding
             return {...state,search:action.item}
+            
+        case 'SNACK':
+            return {...state,snack:action.item}
+                 
             
                     default:
                     return state

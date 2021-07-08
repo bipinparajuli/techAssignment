@@ -1,15 +1,23 @@
 import React,{useState,useEffect} from 'react'
 import './UpdateApplication.css'
+import {makeStyles} from '@material-ui/core/styles'
 import {TextField,Select,MenuItem,InputLabel,Button} from '@material-ui/core'
 import {DropzoneArea} from 'material-ui-dropzone'
-import {getApp,updateApp} from '../helper/apihelper'
+import {getApp,updateApp,deletProduct} from '../helper/apihelper'
 import Navbar from '../Home/Navbar/Navbar'
+import Typography from '@material-ui/core/Typography';
 import  {toast} from "react-toastify"
 import { isAuthenticated } from '../auth'
+import Dialog from "../dialog/Dialog"
+import UpdateTable from '../Home/Table/UpdateTable'
 
 const {data}= isAuthenticated();
 
+
+
 const UpdateApplication = ({match}) => {
+
+  const [updatedata,setUpdateData] = useState([])
 
     const [Values, setValues] = useState({
         title:"",
@@ -66,201 +74,117 @@ const {title,description,appid,apptype,category,email,website,screenshots,icons,
         setValues({...Values,[name]:value})         
             }
             
+            const deleteHandler = (rowid) => {
+              deletProduct(data.token,data.id,rowid).then((data)=>{
+              toast(data,{type:"success"})
+                preload();
+              })
+              
+                          .catch(err=>toast("Failed to delete",{type:"error"}))
+                          
+            }
+
+            const preload = () => {
+              getApp(match.params.appId).then((data)=>{
+                console.log(data);
+                setUpdateData([data])
+                 setValues({...Values,
+                     title:data.title,
+                     description:data.description,
+                     email:data.email,
+                     website:data.website,
+                     releasename:data.releasename,
+                     whatisnew:data.whatisnew,
+                     // apkpath:data.apkpath,
+                     appid:data._id,
+                     loading:true,
+                    formData: new FormData()
+                     // formData:new FormData()
+                 })
+             }).catch(err=>console.log(err))
+            }
 
             useEffect(()=>{
-                console.log(match.params.appId);
 
-                getApp(match.params.appId).then((data)=>{
-                   console.log(data);
-                    setValues({...Values,
-                        title:data.title,
-                        description:data.description,
-                        email:data.email,
-                        website:data.website,
-                        releasename:data.releasename,
-                        whatisnew:data.whatisnew,
-                        // apkpath:data.apkpath,
-                        appid:data._id,
-                       formData: new FormData()
-                        // formData:new FormData()
-                    })
-                }).catch(err=>console.log(err))
+              preload();
+              
             },[])
 
 
     return (
-      <>
-      <Navbar />
-        <div className="container">
+      <div className="update-application">
+          <Typography variant="h4">
+            {title}
+          </Typography>
 
-        <form className="create-app">
+          <div className="update-area">
+            <div className="left">
+              <div className="apk">
+                <Typography variant="h6" >
+                    APK
+                </Typography>
           
-          <div className=" app product-details">
+                <Dialog apkid={appid} />
 
-        <h2>Product Details</h2>
+              </div>
 
-            <TextField
-          id="standard-full-width"
-          label="Title *"
-          style={{ margin: 8 }}
-          placeholder="Ex: Instagram"
-          fullWidth
-          margin="normal"
-            onChange={handleChange("title")}
-            value={title}
-            name="title"
-        />
+              <div className="current-apk">
+                <Typography variant="h6" >
+                   CURRENT APK
+                </Typography>
 
-        <TextField
-          id="standard-full-width"
-          label="Description *"
-          style={{ margin: 8 }}
-          placeholder="Ex: This is a social media platform."
-          fullWidth
-          margin="normal"
-          onChange={handleChange("description")}
-          value={description}
-          name="description"
-
-
-        />
-
+                <Typography variant="p" >
+                   published on : <span>24 june</span>
+                </Typography>
+                  
+              </div>  
+            </div>
+            
+            <div className="right">
+            <Button variant="contained" onClick={()=>deleteHandler(appid)} >
+               Delete Project
+            </Button>
+            </div>
 
           </div>
 
-          <div className="app categorization">
-                <h2>Categorization</h2>
-                <InputLabel id="demo-simple-select-label">Application Type</InputLabel>
-                <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                  // value={apptype}
-                  name="apptype"
-                  onChange={handleChange("apptype")}
-                >
-                <MenuItem value="application">Application</MenuItem>
-                <MenuItem value="game">Game</MenuItem>
-                </Select>
+            <hr />
+          <div className="package-area">
 
-                <InputLabel id="demo-simple-select-label">Application Category</InputLabel>
-                <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                  // value={category}
-                  name="category"
-                  onChange={handleChange("category")}
-                >
-                <MenuItem value="health">Health</MenuItem>
-                <MenuItem value="education">Education</MenuItem>
-                <MenuItem value="entertainment">Entertainment</MenuItem>
-                </Select>
+            <div className="package-name">
+              <Typography variant="subtitle1" color="initial">
+                Package name
+              </Typography>
+
+              <Typography variant="h6" color="initial">
+              com.test.app
+              </Typography>
             </div>
 
-            <div className="app contact-details">
-            <h2>Contact Details</h2>
+            <div className="version">
+            <Typography variant="subtitle1" color="initial">
+                Version
+              </Typography>
 
-                <TextField
-                id="standard-full-width"
-                label="Email *"
-                style={{ margin: 8 }}
-                placeholder="Ex: example@gmail.com"
-                fullWidth
-                margin="normal"
-              onChange={handleChange("email")}
-          value={email}
-          name="email"
-
-                />
-
-                <TextField
-                id="standard-full-width"
-                label="Website "
-                style={{ margin: 8 }}
-                placeholder="Ex: www.example.com"
-                fullWidth
-                margin="normal"
-              onChange={handleChange("website")}
-          value={website}
-          name="website"
-                />
+              <Typography variant="h6" color="initial">
+                {releasename}
+              </Typography>
 
             </div>
 
-            <div className="app assets">
-                <h2>Graphics Assets*</h2>
-                
-        
-                {/* <input type="file" onChange={handleChange("screenshots")} name="screenshots"  /> */}
-{/* 
-                <DropzoneArea
-        onChange={handleChange("screenshots")}
-        /> */}
-{/* 
-            <DropzoneArea
-            onChange={()=>handleChange("icons")}
+          </div>
 
-        /> */}
+          <hr />
 
-                <label >Choose Icon for app :  </label>
+          <div className="previous-apk">
+          <Typography variant="h6" >
+                   PREVIOUS APK
+            </Typography>
 
-                <input type="file" onChange={handleChange("icons")}  name="icons" />
-
-            </div>
-
-            <div className="app apk-bundle">
-                <h2>APK to add</h2>
-
-                
-            {/* <DropzoneArea
-            onChange={()=>handleChange("apkfile")}
-         
-         /> */}
-                <label >Choose APK :  </label>
-
-                <input type="file" onChange={handleChange("apkpath")}  name="apkpath" />
-
-            </div>
-
-            <div className="app release-info">
-              <h2>Release Information</h2>
-                
-              <TextField
-          id="standard-full-width"
-          label="Release name *"
-          style={{ margin: 8 }}
-          placeholder="Ex: 1.0"
-          fullWidth
-          margin="normal"
-        onChange={handleChange("releasename")}
-        value={releasename}
-        name="releasename"
-        
-        />
-
-        <TextField
-          id="standard-full-width"
-          label="What is new? *"
-          style={{ margin: 8 }}
-          placeholder="Ex: Fixed issue on Submit button."
-          fullWidth
-          margin="normal"
-          onChange={handleChange("whatisnew")}
-        value={whatisnew}
-         name="whatisnew"
-        />
-            </div>
-
-            <Button variant="contained" color="primary" onClick={()=>handleSubmit(appid)}>
-              
-            {
-                loading ? "updating . . ." : "Update Application"
-              }
-                           </Button>
-              
-        </form>
-
+            {loading ?<UpdateTable data={updatedata} /> :<strong>loading . . .</strong>}
+            
+          </div>
         </div>
-        </>
 
     )
 }

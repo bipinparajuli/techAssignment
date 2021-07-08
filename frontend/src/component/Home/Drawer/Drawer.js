@@ -231,7 +231,7 @@ const icons=[<HomeIcon/>,<CreateNewFolderIcon/>,<PersonIcon/>,<ExitToAppIcon/>]
         <Divider />
         <List>
           {['Home', 'New Project', 'Profile', 'Log out'].map((text, index) => (
-            <Link to={text}>
+            <Link to={text} style={{color:" rgba(0, 0, 0, 0.54)"}}>
             <ListItem button key={text}>
                     <ListItemIcon>{icons[index]}</ListItemIcon>
                     <ListItemText primary={text} />

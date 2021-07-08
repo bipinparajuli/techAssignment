@@ -2,78 +2,96 @@ import React,{useState} from 'react'
 import {signin} from "../auth/index"
 import {useHistory,Link} from "react-router-dom"
 import {toast} from 'react-toastify'
-import {Button,TextField} from "@material-ui/core"
+import {Button,TextField,FormHelperText,FormControl,InputLabel,Input,InputAdornment} from "@material-ui/core"
 import {isAuthenticated,authenticate} from '../auth/index'
+import EmailIcon from '@material-ui/icons/Email';
+import LockOpenIcon from '@material-ui/icons/LockOpen';
+import {useStateValue} from '../context/ServiceProvider'
+
 
 const Signin = () => {
-   const [state,setstate] = useState(
+
+    const [{},dispatch] = useStateValue()
+    const [state,setstate] = useState(
        {
 
         email:"",
-       password:""
+       password:"",
+       emailerror:false,
+       passworderror:false,
+       emailerrortext:"",
+       passworderrortext:"",
+       error:""
+
         }
     );
 
-    const [error,seterror] = useState ({
-        emailFormat:"",
-        passwordFormat:"",
-    })
-    
-    const {emailFormat,passwordFormat} = error;
+console.log("State");    
     
    const history =  useHistory();
 
-   const {email,password} = state;
-
-const SignIn = () =>{
-
-    //validation
-
-// email validation
-
-if (! /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(email))
-{
-    return seterror({
-       emailFormat:"Please check your email format",
-       passwordFormat:"",
-    })
-
-}
-
-//password validation
-
-//password format
-var regx = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})");
-
-if(! regx.test(password))
-{
-    return seterror({
-       emailFormat:"",
-       passwordFormat:"password format don't match",
-    })
-
-}
+   const {email,password,emailerror,passworderror,emailerrortext,passworderrortext,error} = state;
 
 
+const changeEmailHandler = (email) => {
 
+     setstate({...state,email:email})
+    
+        if (! /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(email))
+        {
+            setstate({...state,emailerror:true,emailerrortext:"Email is invalid",email:email})
+        }
 
+        else{
+            setstate({...state,emailerror:false,emailerrortext:"",email:email})
+            
+        }
+  
+    }
+
+    const changePasswordHandler = (password) => {
+
+            setstate({...state,password:password})
+    
+            // var regx = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{8,})");
+    
+            if(password.length <= 1)
+            {
+                setstate({...state,passworderror:true,passworderrortext:"Password is required",password:password})
+            
+            }
+            else if( password.length <= 6)
+            {
+                setstate({...state,passworderror:true,passworderrortext:"At least 6 characters",password:password})
+            
+            }
+            else{
+                setstate({...state,passworderror:false,passworderrortext:"",password:password})
+            }
+        }
+    
+        
+const SignIn = (e) =>{
+
+    console.log(email);
 //navigating to storage    
-signin(state).then((data)=>{
+signin({email,password}).then((data)=>{
   
     console.log(data);
 if(data.success)
 {
     
 authenticate(data,()=>{
+    dispatch({
+        type:"SNACK",
+        item:true
+    })
     history.push("/home")
 }).catch(err=>console.log("Server Error"))
 }
 
 else{
-    return seterror({
-        emailFormat:"",
-        passwordFormat:data.messege,
-     })
+  setstate({...state,error:data.messege})
 }
 
 
@@ -96,46 +114,62 @@ else{
 
                 <div className="col-2">
                     <div>
+                        <strong style={{color:"red"}}>{error}</strong>
                     <h1>Sign in here</h1>
 
 <form action="">
-{
-    emailFormat? (
+<TextField
+            name="email"
+            value={email}
+          error={emailerror}
+          id="standard-error-helper-text"
+          label="Email"
+          placeholder="Enter email"
+        //   defaultValue="test@"
+          helperText={emailerrortext}
+          onChange={(e)=>changeEmailHandler(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <EmailIcon style={{position:"relative",left:"180"}} />
+              </InputAdornment>
+            ),
+          }}
+        />
+ 
+<br/>
+<br/>
+<TextField
+          error={passworderror}
+          id="standard-error-helper-text"
+          label="Password"
+          placeholder="Enter password"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <LockOpenIcon />
+              </InputAdornment>
+            ),
+          }}
 
-    <>
-        <span style={{color:"red"}}>
-            {emailFormat}
-        </span>
-        <br/> <br/> 
-    </>
-    ): ""
-    
- }
-
-     <TextField label="Email" required  type="email"  onChange={e=>setstate({...state,email:e.target.value})} />
+        //   defaultValue="test@"
+          helperText={passworderrortext}
+          onChange={e=>changePasswordHandler(e.target.value)}
+        />
 
 <br/>
 <br/>
 
-{
-    passwordFormat ? (
-    <>
-        <span style={{color:"red"}}>
-            {`${passwordFormat}`}
-        </span>
-         <br/> <br/> 
-    </>): ""
-}
-
- <TextField label="Password" required  type="password" onChange={e=>setstate({...state,password:e.target.value})} />
-
-<br/>
-<br/>
-
-<Button variant="contained" color="primary" onClick={SignIn}>Signin</Button><br /><br />
+<Button 
+style={{borderRadius:"20px",width:"77%"}}
+variant="contained" color="primary"
+ onClick={()=>SignIn()}
+ >
+     Login
+</Button><br /><br />
 </form>
 
-<strong style={{textAlign:"center"}}>New Account <Link to="/">Account ?</Link></strong>
+<strong>New Account <Link to="/">Account ?</Link></strong>
                     </div>
                 </div>
             

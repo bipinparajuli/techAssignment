@@ -1,20 +1,40 @@
-.create-app{
+.update-area{
     display: flex;
-    flex-direction: column;
-    width: 50%;
-    margin-bottom: 5%;
-}
-
-.app{
+    justify-content: space-between;
     background-color: #fff;
-    box-shadow: 1px 0px 1px 1px blueviolet;
-    margin: 2% 0;
-    padding: 5%;
-    border-radius: 10px;
+    padding: 15px;
+
 }
 
-.container{
-    background-color: #ccc;
+.apk{
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    background-color: #fff;
+    margin-bottom: 15px;
+    width: 250px;
+}
+.current-apk{
+    display: flex;
+    justify-content: space-between;
+    background-color: #fff;
+    margin-bottom: 15px;
+    width: 350px;
+}
+
+.package-area{
+    display: flex;
+    padding: 10px 15px;
+    background-color: #fff;
+}
+.version{
+    margin-left: 15%;
+}
+
+.right,.left{
+    margin-top: 10px;
+}
+
+.previous-apk{
+    background-color: #fff;
+    padding-left: 15px;
 }

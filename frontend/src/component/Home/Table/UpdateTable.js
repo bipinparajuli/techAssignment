@@ -13,9 +13,7 @@ import {getProducts,deletProduct,Image} from '../../helper/apihelper'
 import {useStateValue} from '../../context/ServiceProvider'
 import { toast } from 'react-toastify';
 import { isAuthenticated } from '../../auth';
-// import AndroidIcon from '@material-ui/icons/Android';
-import AndroidIcon from '@material-ui/icons/AndroidOutlined';
-import { green } from '@material-ui/core/colors';
+import GetAppIcon from '@material-ui/icons/GetApp';
 
 const {data} = isAuthenticated()
 
@@ -27,27 +25,18 @@ const useStyles = makeStyles({
 });
 
 
-export default function BasicTable() {
+export default function UpdateTable({data}) {
 const[{search},dispatch]=  useStateValue();
   const [rows, setrows] = useState([])
   const classes = useStyles();
 
   const preload = () => {
-    getProducts().then(data=>{
-      console.log(data);
-      setrows(data)
-    }).catch(err=>console.log(err))
+    console.log(data);
+   setrows(data)
+  
   }
 
-  const deleteHandler = (rowid) => {
-    deletProduct(data.token,data.id,rowid).then((data)=>{
-    toast(data,{type:"success"})
-      preload();
-    })
-    
-                .catch(err=>toast("Failed to delete",{type:"error"}))
-                
-  }
+
 
 useEffect(()=>{
   preload();
@@ -69,35 +58,21 @@ preload();
       <Table className={classes.table} aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell>APP NAME</TableCell>
-            <TableCell>PRICE</TableCell>  
-            <TableCell align="right">LATEST VERSION</TableCell>
-            <TableCell align="right">CREATED</TableCell>
-            <TableCell align="right">TOTAL VERSIONS</TableCell>
-            <TableCell align="right">PACKAGE URL</TableCell>
-            <TableCell align="right">STATUS</TableCell>
-
+            <TableCell>VERSION</TableCell>
+            <TableCell align="right">UPLOADED ON</TableCell>
+            <TableCell align="right">UNIQUE ID</TableCell>
+            <TableCell align="right">DOWNLOAD</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {rows== undefined?<h3>Could not found App in server </h3> :rows.map((row) => (
             <TableRow key={row.name}>
               <TableCell component="th" scope="row">
-               <Link style={{color:"#000"}} to={`update/${row._id}`}><AndroidIcon  style={{ color: green[500] }} /> {row.title}</Link>
+              {row.releasename}
               </TableCell>
-              <TableCell component="th" scope="row">
-                Free
-              </TableCell>
-              <TableCell align="right">{row.releasename}</TableCell>
-              <TableCell align="right">{row.createdAt}</TableCell>
-              <TableCell align="right"></TableCell>
-              <TableCell align="right">
-              
-              </TableCell>
-              <TableCell align="right">
-                Published
-              </TableCell>
-
+              <TableCell align="right">{row.updatedAt}</TableCell>
+              <TableCell align="right">{row._id}</TableCell>
+              <TableCell align="right"><GetAppIcon /></TableCell>
             </TableRow>
           ))}
         </TableBody>
