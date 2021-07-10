@@ -1,12 +1,12 @@
 import React,{useState} from 'react'
 import {signin} from "../auth/index"
 import {useHistory,Link} from "react-router-dom"
-import {toast} from 'react-toastify'
-import {Button,TextField,FormHelperText,FormControl,InputLabel,Input,InputAdornment} from "@material-ui/core"
-import {isAuthenticated,authenticate} from '../auth/index'
+import {Button,TextField,InputAdornment} from "@material-ui/core"
+import {authenticate} from '../auth/index'
 import EmailIcon from '@material-ui/icons/Email';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import {useStateValue} from '../context/ServiceProvider'
+ 
 
 
 const Signin = () => {
@@ -125,13 +125,12 @@ else{
           id="standard-error-helper-text"
           label="Email"
           placeholder="Enter email"
-        //   defaultValue="test@"
           helperText={emailerrortext}
           onChange={(e)=>changeEmailHandler(e.target.value)}
           InputProps={{
             startAdornment: (
-              <InputAdornment position="start">
-                <EmailIcon style={{position:"relative",left:"180"}} />
+              <InputAdornment style={{position:"absolute",left:"160px"}} >
+                <EmailIcon  />
               </InputAdornment>
             ),
           }}
@@ -146,7 +145,7 @@ else{
           placeholder="Enter password"
           InputProps={{
             startAdornment: (
-              <InputAdornment position="start">
+              <InputAdornment style={{position:"absolute",left:"160px"}} >
                 <LockOpenIcon />
               </InputAdornment>
             ),
@@ -169,11 +168,12 @@ variant="contained" color="primary"
 </Button><br /><br />
 </form>
 
-<strong>New Account <Link to="/">Account ?</Link></strong>
+<strong className="question" >New Account? <Link className="question" to="/signup">SIgn up</Link></strong>
                     </div>
                 </div>
             
             </div>
+          
         </div>
     )
 }

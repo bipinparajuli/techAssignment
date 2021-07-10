@@ -1,12 +1,15 @@
 export const initailState={
     search:[],
-    snack:false
+    update:[],
+    length:[1],
+    snack:false,
+    delet:false
     }
     
     
     
     function Reducer(state,action) {
-        console.log(action)
+        // console.log(state)
     switch(action.type){
         case 'SEARCH':
             //logic for adding
@@ -14,8 +17,17 @@ export const initailState={
             
         case 'SNACK':
             return {...state,snack:action.item}
-                 
+
+            case 'DELETE':
+            return {...state,delet:action.item}
+
             
+            case 'UPDATE':
+                return {...state,update:[...state.update,action.item]}    
+                 
+                case 'LENGTH':
+                    return {...state,length:action.item}    
+                    
                     default:
                     return state
     }

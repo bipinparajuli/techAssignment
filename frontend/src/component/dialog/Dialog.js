@@ -9,30 +9,28 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import {getApp,updateApp} from '../helper/apihelper'
 import { isAuthenticated } from '../auth'
 import {toast} from 'react-toastify'
+import {useStateValue} from '../context/ServiceProvider'
 
 const {data} = isAuthenticated();
 
 export default function FormDialog({apkid}) {
+  
+  const [{length},dispatch] = useStateValue();
+
+  const [] = useState(false)
   const [open, setOpen] = React.useState(false);
   const [Values, setValues] = useState({
-    title:"",
-    description:"",
-    apptype:"",
-    category:'',
-    email:"",
-    website:"",
-    screenshots:"",
-    icons:"",
     apkpath:"",
     releasename:"",
-    whatisnew:"",
     loading:false,
     error:"",
     appid:"",
-    formData:""
+    releasenameerror:false,
+    releasenameerrortext:"",
+    formData:new FormData()
 })
 
-const {title,description,appid,apptype,category,email,website,screenshots,icons,apkpath,releasename,whatisnew,loading,error,getRedirected,formData} = Values;
+const {releasename,formData,releasenameerror,releasenameerrortext} = Values;
 
 
   const handleClickOpen = () => {
@@ -45,12 +43,25 @@ const {title,description,appid,apptype,category,email,website,screenshots,icons,
 
   const handleSubmit =(e)=>{
     
+    formData.set("nofoversion",length+1);
+    console.log(data.token);
+
     setValues({...Values,loading:true})
-      console.log(Array.from(formData));
+      // console.log(Array.from(formData));
       updateApp(data.token,data.id,e,formData).then((data)=>{
         // console.log(data);
-        toast("Updated Succesfully",{type:"success"})
+
+        if(! data.success){
         setValues({...Values,loading:false})
+         return toast("Failed to update",{type:"error"})
+        }
+        dispatch({
+          type:"UPDATE",
+          item:data.data
+        })
+        setValues({...Values,loading:false})
+          toast("Updated Succesfully",{type:"success"})
+        
       }).catch((e)=>{
         toast("Failed to update",{type:"error"})
         setValues({...Values,loading:false})
@@ -63,19 +74,35 @@ const {title,description,appid,apptype,category,email,website,screenshots,icons,
   const handleChange = name => event => {
     let value;
 
-    if(name === "screenshots" || name=== "icons" ||name ==="apkpath")
+
+
+    if(name ==="apkpath")
       {
         console.log(event.target.files);
          value= event.target.files[0];
-      }
+         formData.set(name,value);
+         setValues({...Values,[name]:value})
+        }
       else{
-         value= event.target.value;
+        //Release name
+            
+                      var regx = new RegExp("^([0-9])\.([0-9])\.([0-9])");
+
+              if(! regx.test(event.target.value))
+              {
+              setValues({...Values,releasenameerror:true,releasenameerrortext:"Version no. is invalid",releasename:event.target.value})
+              }
+
+
+            else{
+              setValues({...Values,[name]:releasename,releasenameerror:false,releasenameerrortext:"",releasename:event.target.value})
+              formData.set(name,event.target.value);
+            }
+
       }
 
     
-   console.log(value);
-    formData.set(name,value);
-    setValues({...Values,[name]:value})         
+             
         }
 
 
@@ -114,11 +141,13 @@ const {title,description,appid,apptype,category,email,website,screenshots,icons,
             type="text"
             name="releasename"
             fullWidth
+            error={releasenameerror}
+            helperText={releasenameerrortext}
           />
           </form>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleSubmit(apkid)} color="primary">
+          <Button onClick={()=>handleSubmit(apkid)} color="primary">
             YES
           </Button>
           <Button onClick={handleClose} color="primary">

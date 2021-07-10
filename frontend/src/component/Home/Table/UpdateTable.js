@@ -26,21 +26,32 @@ const useStyles = makeStyles({
 
 
 export default function UpdateTable({data}) {
-const[{search},dispatch]=  useStateValue();
+const[{search,update},dispatch]=  useStateValue();
   const [rows, setrows] = useState([])
   const classes = useStyles();
 
   const preload = () => {
-    console.log(data);
-   setrows(data)
+    console.log(update);
   
   }
 
 
 
 useEffect(()=>{
-  preload();
-},[])
+  // preload();
+  console.log(update);
+setrows(update)
+
+if(update.length <= 0)
+{
+  // setrows(data)
+  dispatch({
+    type:"UPDATE",
+    item:data
+  })
+}
+
+},[update])
 
 useEffect(()=>{
 
@@ -70,7 +81,7 @@ preload();
               <TableCell component="th" scope="row">
               {row.releasename}
               </TableCell>
-              <TableCell align="right">{row.updatedAt}</TableCell>
+              <TableCell align="right">{row.updatedAt.substr(0,10)}</TableCell>
               <TableCell align="right">{row._id}</TableCell>
               <TableCell align="right"><GetAppIcon /></TableCell>
             </TableRow>

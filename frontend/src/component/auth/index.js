@@ -1,5 +1,6 @@
 let API = "http://localhost:5000/api"
 
+
 export const signup = user => {
     // console.log(user);
         return fetch(`${API}/signup`,{
@@ -42,16 +43,17 @@ export const signup = user => {
     
     
         export const signout = next => {
+
             if(typeof window !== "undefined")
             {
                 localStorage.removeItem("jwt")
                 next();
     
-                return fetch(`${API}/signout`,{
-                    method:"GET"
-                })
-                .then(response => console.log("signout success"))
-                .catch(err => console.log(err))
+                // return fetch(`${API}/signout`,{
+                //     method:"GET"
+                // })
+                // .then(response => console.log("signout success"))
+                // .catch(err => console.log(err))
             }
             }
     

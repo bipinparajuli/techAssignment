@@ -16,7 +16,6 @@ import { isAuthenticated } from '../../auth';
 // import AndroidIcon from '@material-ui/icons/Android';
 import AndroidIcon from '@material-ui/icons/AndroidOutlined';
 import { green } from '@material-ui/core/colors';
-
 const {data} = isAuthenticated()
 
 const useStyles = makeStyles({
@@ -37,6 +36,7 @@ const[{search},dispatch]=  useStateValue();
       console.log(data);
       setrows(data)
     }).catch(err=>console.log(err))
+    
   }
 
   const deleteHandler = (rowid) => {
@@ -89,10 +89,10 @@ preload();
                 Free
               </TableCell>
               <TableCell align="right">{row.releasename}</TableCell>
-              <TableCell align="right">{row.createdAt}</TableCell>
-              <TableCell align="right"></TableCell>
+              <TableCell align="right">{row.createdAt.substr(0,10)}</TableCell>
+              <TableCell align="right">{row.nofoversion}</TableCell>
               <TableCell align="right">
-              
+                {row.packageurl}              
               </TableCell>
               <TableCell align="right">
                 Published

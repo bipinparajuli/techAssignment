@@ -20,7 +20,7 @@ function Alert(props) {
 
 
 const Home = () => {
-    const [{snack},dispatch] = useStateValue();
+    const [{delet,snack},dispatch] = useStateValue();
     const [state, setState] = React.useState({
         open: true,
         vertical: 'top',
@@ -57,6 +57,18 @@ const Home = () => {
       >
  <Alert onClose={handleClose} severity="info">
     Successfully logged in
+  </Alert>
+          </Snackbar>
+
+          <Snackbar
+        color="primary"
+        autoHideDuration={6000}
+        open={delet}
+        onClose={handleClose}
+        // message="Successfully loggedin"
+      >
+ <Alert onClose={handleClose} severity="info">
+    Successfully deleted the project
   </Alert>
           </Snackbar>
 </>

@@ -24,6 +24,8 @@ import SearchIcon from '@material-ui/icons/Search';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import {Link} from 'react-router-dom'
 import BasicTable from '../Table/BasicTable';
+import {useStateValue} from '../../context/ServiceProvider'
+import {searchApp} from '../../helper/apihelper'
 
 
 const drawerWidth = 240;
@@ -142,6 +144,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function MiniDrawer({children}) {
+
+  const [{},dispatch] = useStateValue();
+
 const icons=[<HomeIcon/>,<CreateNewFolderIcon/>,<PersonIcon/>,<ExitToAppIcon/>]
 
   const classes = useStyles();
@@ -155,6 +160,25 @@ const icons=[<HomeIcon/>,<CreateNewFolderIcon/>,<PersonIcon/>,<ExitToAppIcon/>]
   const handleDrawerClose = () => {
     setOpen(false);
   };
+
+  
+ const onChangeHandler = (e) => {
+
+
+  if(e.target.value.length > 0)
+  {
+    console.log(e.target.value.length);
+    
+    searchApp(e.target.value).then(data=>{
+      console.log(data);
+      dispatch({  
+        type:"SEARCH",
+        item:data
+    })
+    })
+
+  }
+}
 
   return (
     <div className={classes.root}>
@@ -187,6 +211,7 @@ const icons=[<HomeIcon/>,<CreateNewFolderIcon/>,<PersonIcon/>,<ExitToAppIcon/>]
             </div>
             <InputBase
               placeholder="Search Projects…"
+               onChange={(e)=>onChangeHandler(e)}
               classes={{
                 root: classes.inputRoot,
                 input: classes.inputInput,
@@ -231,7 +256,7 @@ const icons=[<HomeIcon/>,<CreateNewFolderIcon/>,<PersonIcon/>,<ExitToAppIcon/>]
         <Divider />
         <List>
           {['Home', 'New Project', 'Profile', 'Log out'].map((text, index) => (
-            <Link to={text} style={{color:" rgba(0, 0, 0, 0.54)"}}>
+            <Link to={`/${text}`} style={{color:" rgba(0, 0, 0, 0.54)"}}>
             <ListItem button key={text}>
                     <ListItemIcon>{icons[index]}</ListItemIcon>
                     <ListItemText primary={text} />
