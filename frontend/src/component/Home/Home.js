@@ -60,7 +60,7 @@ const Home = () => {
   </Alert>
           </Snackbar>
 
-          <Snackbar
+          {/* <Snackbar
         color="primary"
         autoHideDuration={6000}
         open={delet}
@@ -70,7 +70,7 @@ const Home = () => {
  <Alert onClose={handleClose} severity="info">
     Successfully deleted the project
   </Alert>
-          </Snackbar>
+          </Snackbar> */}
 </>
 
   
