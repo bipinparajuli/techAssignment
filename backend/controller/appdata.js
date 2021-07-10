@@ -8,6 +8,7 @@ let _ = require("lodash");
 exports.getAppById = (req,res,next,id)=>{
   Appdata.findById(id).then((app)=>{
     req.app = app
+    console.log(req.app);
     next();
   }).catch(e=>{
     console.log(e);
@@ -36,8 +37,8 @@ next();
 //get single App
 
 exports.getApp = (req,res) => {
-  req.app.icons = undefined;
-  req.app.screenshots = undefined;
+  // req.app.icons = undefined;
+  // req.app.screenshots = undefined;
 
   return res.json(req.app);
 }
@@ -81,11 +82,13 @@ exports.createApp = async (req,res) => {
       }
       
       //destructure the fields
-      const { title, description, apptype, releasename, email,category } = fields;
+      const { title,apkpath,packageurl,releasename, } = fields;
   
-      if (!title || !description || !apptype || !category ||  !email) {
+
+      if (!title || !releasename ||  !packageurl) {
         return res.status(400).json({
-          error: "Please include all fields"
+          error: "Please include all fields",
+          success:false
         });
       }
   
@@ -135,7 +138,7 @@ exports.createApp = async (req,res) => {
             error: "Saving tshirt in DB failed"
           });
         }
-        res.json(app);
+        res.json({status:200,success:true,data:app,messege:["API IS WORKING"]});
       });
     });
 
@@ -207,10 +210,12 @@ if(file.apkpath){
       if (err) {
         console.log(err);
         res.status(400).json({
-          error: "Updation of app failed"
+          error: "Updation of app failed",
+          success:false,
+          messege:["API is not working"]
         });
       }
-      res.json(app);
+      res.json({success:true,data:app,status:200});
     });
   });
 }
@@ -240,7 +245,7 @@ exports.getAllApp = async (req,res) => {
 //deleting app
 exports.deleteApp = async (req,res) => {
   let app = req.app;
-  
+  console.log(app);
   //Deleting APK
   fs.unlink(req.app.apkpath, function (err) {
     // if (err) throw err;

@@ -7,7 +7,7 @@ const app = new mongoose.Schema({
     },
     description:{
         type:String,
-        required:true
+        // required:true
         
     },
     screenshots:{
@@ -26,15 +26,21 @@ const app = new mongoose.Schema({
     },
     email:{
         type:String,
-        required:true
+        // required:true
     },
     website:{
         type:String,
     },
     releasename:{
         type:String,
+        required:true,
         default:1.0
     },
+    packageurl:{
+        type:String,
+        required:true
+    },
+
     whatisnew:{
         type:String
     },
@@ -42,8 +48,9 @@ const app = new mongoose.Schema({
         type:String,
         required:true
     },
-    privacy:{
-        type:String
+    nofoversion:{
+        type:Number,
+        default:1
     }
 },{timestamps: true})
 
