@@ -1,9 +1,23 @@
 const Appdata = require("../model/appdata");
 const formidable = require("formidable");
 const fs = require("fs");
+const {BlobServiceClient} = require("@azure/storage-blob")
 let _ = require("lodash");
+let {uuid} = require("uuidv4")
 
 
+//connection string
+            //azure connection string
+            const AZURE_STORAGE_CONNECTION_STRING ="DefaultEndpointsProtocol=https;AccountName=csg100320015854bffe;AccountKey=lp8+Q51yt6RqBj4mb69q85TWnqAqG8IqgSJVVf8bxQOQofsh4OO5zZaVgJQYEQ3NTKRrIxHrBNBAGh0AB7oFnQ==;EndpointSuffix=core.windows.net";
+
+              // Create the BlobServiceClient object which will be used to create a container client
+           const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION_STRING);
+
+            // Blob Storage
+
+            // console.log(AZURE_STORAGE_CONNECTION_STRING);
+
+           
 //Setting App according to ID
 exports.getAppById = (req,res,next,id)=>{
   Appdata.findById(id).then((app)=>{
@@ -36,10 +50,15 @@ next();
 
 //get single App
 
-exports.getApp = (req,res) => {
+exports.getApp = async (req,res) => {
   // req.app.icons = undefined;
   // req.app.screenshots = undefined;
+  console.log('\nListing blobs...');
 
+  // List the blob(s) in the container.
+  for await (const blob of containerClient.listBlobsFlat()) {
+      console.log('\t', blob.name);
+  }
   return res.json(req.app);
 }
 
@@ -81,6 +100,13 @@ exports.createApp = async (req,res) => {
         });
       }
       
+      
+    if(file.apkpath.type == "application/vnd.android.package-archive")
+    {
+      
+           var path = fs.readFileSync(file.apkpath.path);
+     
+    }
       //destructure the fields
       const { title,apkpath,packageurl,releasename, } = fields;
   
@@ -91,55 +117,67 @@ exports.createApp = async (req,res) => {
           success:false
         });
       }
-  
-    
 
-      let filepath;
-      
-    if(file.apkpath.type == "application/vnd.android.package-archive")
-      {
-        
-             filepath =`./uploads/${file.apkpath.name}`;
-            
-
-             let path = fs.readFileSync(file.apkpath.path);
-      
-       
-               fs.writeFile(filepath,path,(data)=>{
-                   console.log("filewritten success");
-               })
-        
-      }
-
-
-      
-
-    let app= new Appdata({...fields,apkpath:filepath});
-      //handle file here
-      if (file.icons) {
-        if (file.icons.size > 3000000) {
-          return res.status(400).json({
-            error: "File size too big!"
-          });
-        }
-
-
-        app.icons.data = fs.readFileSync(file.icons.path);
-        app.icons.contentType = file.icons.type;
-      }
+      let app= new Appdata({...fields});
   
       //save to the DB
       app.save((err, app) => {
-      // console.log(app,"SAVING");
-       
-        if (err) {
-       console.log(err);
-          res.status(400).json({
-            error: "Saving tshirt in DB failed"
-          });
-        }
-        res.json({status:200,success:true,data:app,messege:["API IS WORKING"]});
-      });
+        // console.log(app,"SAVING");
+         
+          if (err) {
+         console.log(err);
+            res.status(400).json({
+              error: "Saving app in DB failed"
+            });
+          }
+         
+           // Create a unique name for the container
+           const containerName = app._id;
+
+           console.log('\nCreating container...');
+           console.log('\t', containerName);
+
+           // Get a reference to a container
+           const containerClient = blobServiceClient.getContainerClient(containerName);
+
+           console.log(containerClient);
+
+           const createContainerResponse =  containerClient.create();
+           console.log("Container was created successfully. requestId: ", createContainerResponse.requestId);
+
+          // Create a unique name for the blob
+          const blobName = 'blob' + uuid() + '.apk';
+
+          // Get a block blob client
+          const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+
+          console.log('\nUploading to Azure storage as blob:\n\t', blobName);
+
+          // Upload data to the blob
+          blockBlobClient.upload(path,path.length).then(uploadBlobResponse=>{
+            console.log("Blob was uploaded successfully. requestId: ", uploadBlobResponse);
+          }).catch((e)=>console.log(e));
+                  
+          
+          
+          res.json({status:200,success:true,data:app,messege:["API IS WORKING"]});
+        });
+    
+   
+      //handle file here
+      // if (file.icons) {
+      //   if (file.icons.size > 3000000) {
+      //     return res.status(400).json({
+      //       error: "File size too big!"
+      //     });
+      //   }
+
+
+      //   app.icons.data = fs.readFileSync(file.icons.path);
+      //   app.icons.contentType = file.icons.type;
+      // }
+  
+      
     });
 
 }
@@ -221,7 +259,7 @@ if(file.apkpath){
 }
 
 //get all app
-exports.getAllApp = async (req,res) => {
+exports.getAllApp =  (req,res) => {
   let limit = req.query.limit ? parseInt(req.query.limit) : 5;
   let sortBy = req.query.sortBy ? req.query.sortBy : "_id";
 
@@ -229,14 +267,27 @@ exports.getAllApp = async (req,res) => {
     // .select("-photo")
     // .populate("category")
     .sort([[sortBy, "asc"]])
-    .limit(limit)
+    // .limit(limit)
     .exec((err, apps) => {
-      console.log(apps.length);
+      console.log(apps);
       if (err) {
         return res.status(400).json({
           error: "NO APP FOUND"
         });
       }
+
+      console.log(apps[0]._id);
+
+      // Get a reference to a container
+      const containerClient = blobServiceClient.getContainerClient(apps[0]._id);
+
+      // console.log(containerClient);
+
+      // List the blob(s) in the container.
+      for await (const blob of containerClient.listBlobsFlat()) {
+        console.log('\t', blob.name);
+    }
+
       res.json(apps);
     });
 

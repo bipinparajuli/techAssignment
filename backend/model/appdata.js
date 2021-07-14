@@ -46,7 +46,7 @@ const app = new mongoose.Schema({
     },
     apkpath:{
         type:String,
-        required:true
+        // required:true
     },
     nofoversion:{
         type:Number,

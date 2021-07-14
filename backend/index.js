@@ -15,6 +15,7 @@ app.use(bodyParser.json());
 app.use(cors())
 
 
+
 //DATABASE CONNECTION
 mongoose.connect(process.env.DATABASE,
  {useNewUrlParser: true})
