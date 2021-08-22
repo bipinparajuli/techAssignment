@@ -8,7 +8,7 @@ let {uuid} = require("uuidv4")
 
 //connection string
             //azure connection string
-            const AZURE_STORAGE_CONNECTION_STRING ="DefaultEndpointsProtocol=https;AccountName=csg100320015854bffe;AccountKey=9JtphJ93nUO2gRiVKaYDp07HHhgM6h6RDTPsJP2JFAuF0zqZP8l6viXz5dubww4dspCR0D2yO73urZNaAv7qcw==;EndpointSuffix=core.windows.net"
+            const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING
 
               // Create the BlobServiceClient object which will be used to create a container client
            const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION_STRING);
