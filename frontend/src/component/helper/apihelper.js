@@ -19,12 +19,13 @@ export const createApp = (id,token,product) => {
   
 //get all products
 export const getProducts = () => {
+  console.log("products");
 
     return fetch(`${API}/getallapp`, {
       method: "GET"
     })
       .then(response => {
-     console.log(response)
+     console.log("PRODUCTS",response)
         return response.json();
       })
       .catch(err => console.log(err));

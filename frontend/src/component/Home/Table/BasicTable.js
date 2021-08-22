@@ -32,10 +32,12 @@ const[{search},dispatch]=  useStateValue();
   const classes = useStyles();
 
   const preload = () => {
+  console.log("home");
+
     getProducts().then(data=>{
-      console.log(data);
-      setrows(data)
-    }).catch(err=>console.log(err))
+      console.log("DATA",data);
+      setrows([...data.data])
+    }).catch(err=>console.log("DATA",err))
     
   }
 

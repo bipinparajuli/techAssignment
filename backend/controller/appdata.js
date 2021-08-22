@@ -8,7 +8,7 @@ let {uuid} = require("uuidv4")
 
 //connection string
             //azure connection string
-            const AZURE_STORAGE_CONNECTION_STRING ="DefaultEndpointsProtocol=https;AccountName=csg100320015854bffe;AccountKey=lp8+Q51yt6RqBj4mb69q85TWnqAqG8IqgSJVVf8bxQOQofsh4OO5zZaVgJQYEQ3NTKRrIxHrBNBAGh0AB7oFnQ==;EndpointSuffix=core.windows.net";
+            const AZURE_STORAGE_CONNECTION_STRING ="DefaultEndpointsProtocol=https;AccountName=csg100320015854bffe;AccountKey=9JtphJ93nUO2gRiVKaYDp07HHhgM6h6RDTPsJP2JFAuF0zqZP8l6viXz5dubww4dspCR0D2yO73urZNaAv7qcw==;EndpointSuffix=core.windows.net"
 
               // Create the BlobServiceClient object which will be used to create a container client
            const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION_STRING);
@@ -274,17 +274,21 @@ exports.getAllApp =  (req,res) => {
         return res.status(400).json({
           error: "NO APP FOUND"
         });
+      
       }
+      else{
+     return res.json({success:true,data:apps,status:200});
 
-      console.log(apps[0]._id);
+      }
+      // console.log(apps[0]._id);
 
       // Get a reference to a container
       const containerClient = blobServiceClient.getContainerClient(apps[0]._id);
 
-      // console.log(containerClient);
+      console.log("CONTAINER CLIENT",containerClient);
 
       // List the blob(s) in the container.
-      for await (const blob of containerClient.listBlobsFlat()) {
+      for (const blob of containerClient.listBlobsFlat()) {
         console.log('\t', blob.name);
     }
 
